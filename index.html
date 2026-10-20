@@ -73,6 +73,22 @@ h2 .n{font-size:14px;color:var(--ok);font-weight:900}
 .card button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .note{background:var(--warnbg);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:0;font-size:14px}
 .ph{background:#fff1c7;border-radius:4px;padding:0 3px;font-weight:700}
+.flow{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.flow .step{display:grid;grid-template-columns:44px 1fr;gap:14px;position:relative;padding-bottom:18px}
+.flow .step:not(:last-child)::before{content:"";position:absolute;left:21px;top:44px;bottom:0;width:2px;background:var(--line)}
+.flow .sn span{display:flex;width:44px;height:44px;border-radius:50%;background:var(--brand);color:var(--brand-ink);font-weight:900;align-items:center;justify-content:center;font-size:18px}
+.flow .gap .sn span{background:var(--paper);color:var(--warn);border:2px dashed var(--warn)}
+.flow .sb{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;min-width:0}
+.flow .gap .sb{border:2px dashed var(--warn);background:var(--warnbg)}
+.flow .sh{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-bottom:6px}
+.flow .sh b{font-size:18px}
+.flow .sh span{font-size:13px;color:var(--muted)}
+.flow ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.flow li li{font-size:14.5px;line-height:1.6;display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:99px;white-space:nowrap;margin-top:2px}
+.tag.ok{background:var(--okbg);color:var(--ok)}
+.tag.no{background:var(--warnbg);color:var(--warn);border:1px dashed var(--warn)}
+.lead .tag{margin:0 2px}
 </style>
 </head>
 <body>
@@ -95,16 +111,18 @@ h2 .n{font-size:14px;color:var(--ok);font-weight:900}
 <main class="in">
 
 <section id="now">
-  <h2><span class="n">01</span>いまの導線（調べて分かったこと）</h2>
-  <p class="lead">石川さんのXの投稿106件（9/7〜10/19）、Circleのイベント告知とリマインド、THE LOCAL SESSION 01のアーカイブを読みました。</p>
-  <div class="facts">
-    <div class="fact"><span class="k">入口</span><b>Xの投稿からLINE登録</b><span>「LINE追加してセミナーを絶対に聞いてほしい」と投稿にリンク。リンク先は友だち追加ページ。</span></div>
-    <div class="fact"><span class="k">セミナーで渡すもの</span><b>ビジネスモデル10個</b><span>「月100万の粗利を地方で稼ぐなら、このビジネスをやる」という10個を参加者にプレゼント。</span></div>
-    <div class="fact"><span class="k">伸びている投稿の型</span><b>具体的な数字と、意外な行動</b><span>「タワマン→限界集落で廃墟ビルを5万円で買った」13.9万表示、「1日4時間も働いてなかった」8.9万表示。</span></div>
-    <div class="fact"><span class="k">セミナーの中身</span><b>「次の10年は地方に張る」</b><span>需要があるのに供給がない場所。稼働率7%→70%のホテル、家賃0円で行列のラーメン屋。</span></div>
-    <div class="fact"><span class="k">いまのリマインド</span><b>告知文の再投稿が中心</b><span>Circle内は「本日20時〜」の短文と長い告知の再掲。「なぜ今日来るべきか」の一言がない。</span></div>
-    <div class="fact"><span class="k">分からなかったこと</span><b>決済前のLINEの中身</b><span>友だち追加しないと見られないため未確認。価格・締切・決済ページは文章案では空欄にした。</span></div>
-  </div>
+  <h2><span class="n">01</span>いまの導線（分かる範囲）</h2>
+  <p class="lead">石川さんのXの投稿106件（9/7〜10/19）、Circleのお知らせ・イベント告知・リマインド、THE LOCAL SESSION 01のアーカイブ、会員LINEの画面から分かったことです。<span class="tag ok">確認済み</span>と<span class="tag no">未確認</span>を分けて書きました。</p>
+  <ol class="flow">
+    <li class="step"><div class="sn"><span>1</span></div><div class="sb"><div class="sh"><b>X</b><span>石川さん（@minatoku_genkai）の投稿</span></div><ul><li><span class="tag ok">確認済み</span>9/7〜10/19で106投稿。いちばん伸びた投稿は19.8万表示</li><li><span class="tag ok">確認済み</span>LINEのリンク付き投稿は2件（10/10・10/11）。表示は1,175と1,566</li><li><span class="tag ok">確認済み</span>誘い文句は「LINE追加して、セミナーを絶対に聞いてほしい」</li><li><span class="tag no">未確認</span>伸びた投稿の返信欄に、LINEのリンクを置いているか</li></ul></div></li>
+    <li class="step"><div class="sn"><span>2</span></div><div class="sb"><div class="sh"><b>リンク</b><span>短縮リンク → 友だち追加ページ</span></div><ul><li><span class="tag ok">確認済み</span>go.the-local.net の短縮リンクから、自社の転送ページを通ってLINEの友だち追加へ</li><li><span class="tag ok">確認済み</span>パソコンで開くとQRコードが出る。「友だち追加で全機能を無料体験できます」の表示</li><li><span class="tag no">未確認</span>リンクごとのクリック数・登録数を数えているか</li></ul></div></li>
+    <li class="step gap"><div class="sn"><span>3</span></div><div class="sb"><div class="sh"><b>集客用LINE</b><span>登録した人に届く配信</span></div><ul><li><span class="tag no">未確認</span>アカウント名・あいさつ文・配信の中身（友だち追加しないと見られないため）</li><li><span class="tag no">未確認</span>セミナーの申込方法と、リマインドの送り方</li></ul></div></li>
+    <li class="step"><div class="sn"><span>4</span></div><div class="sb"><div class="sh"><b>セミナー</b><span>THE LOCAL TALK（オンライン）</span></div><ul><li><span class="tag ok">確認済み</span>Google Meetで20:00〜21:00、参加無料。10月は10/8・10/15・10/21・10/29の週1回</li><li><span class="tag ok">確認済み</span>Xでの特典は「ビジネスモデル10個」。10/15の回は広告設定マニュアルなど</li><li><span class="tag ok">確認済み</span>10/8の回で入会特典「110万で提供してたビジネスフレームワーク」を案内</li><li><span class="tag no">未確認</span>集客用LINEの人と会員が、同じ回に参加しているか</li></ul></div></li>
+    <li class="step gap"><div class="sn"><span>5</span></div><div class="sb"><div class="sh"><b>決済</b><span>入会（合流）の申込</span></div><ul><li><span class="tag no">未確認</span>価格・決済ページ・締切・使っている決済の仕組み</li><li><span class="tag no">未確認</span>決済した人が会員LINEに移る方法</li></ul></div></li>
+    <li class="step"><div class="sn"><span>6</span></div><div class="sb"><div class="sh"><b>会員LINE</b><span>THE LOCAL｜会員専用</span></div><ul><li><span class="tag ok">確認済み</span>最初のメッセージでCircleの招待リンクと「STEP1・STEP2」を案内</li><li><span class="tag ok">確認済み</span>リッチメニューは「解約」のボタン1つだけ</li></ul></div></li>
+    <li class="step"><div class="sn"><span>7</span></div><div class="sb"><div class="sh"><b>Circle</b><span>会員コミュニティ</span></div><ul><li><span class="tag ok">確認済み</span>チャンネル9つ、講座「事業設計の実践ガイド」（入会特典）、Events、TALKのログ</li><li><span class="tag ok">確認済み</span>セミナーの告知とリマインドは、Circleのイベントお知らせチャンネルに投稿</li><li><span class="tag ok">確認済み</span>10/18から「入会する」を「THE LOCALに合流する」に言い換え</li></ul></div></li>
+  </ol>
+  <p class="note">3（集客用LINE）と5（決済）は外から見えないため、中身が分かっていません。ここが分かると、文章案の【 】を埋めて、いまの配信と比べた直しにできます。</p>
 </section>
 
 <section id="scenario">
