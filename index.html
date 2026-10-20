@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>THE LOCAL 配信設計</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: 1カラムの読み物＋文章案は種類ごとのタブで切り替えるカード */
+:root{
+  --bg:#f3f5f2; --paper:#ffffff; --fg:#1f2a24; --muted:#5b6760; --line:#d8ded9;
+  --brand:#24392f; --brand-ink:#ffffff; --soft:#e3ebe5; --gold:#e7b33f; --ok:#2f7a4f; --okbg:#e1f0e6; --warn:#b4552d; --warnbg:#f6e6dd;
+  --line-green:#06c755;
+  --f-body:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --paper:#1a221e; --fg:#e6ece8; --muted:#9aa8a0; --line:#2e3a34; --brand:#3f6352; --soft:#22302a; --okbg:#1d3226; --ok:#6cc093; --warn:#e08a63; --warnbg:#3a271f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --paper:#1a221e; --fg:#e6ece8; --muted:#9aa8a0; --line:#2e3a34; --brand:#3f6352; --soft:#22302a; --okbg:#1d3226; --ok:#6cc093; --warn:#e08a63; --warnbg:#3a271f; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.8;margin:0}
+.top{background:var(--brand);color:var(--brand-ink)}
+.in{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top .in{padding-block:44px 40px;display:grid;gap:18px}
+.eyebrow{font-size:12px;letter-spacing:.16em;font-weight:700;opacity:.75}
+h1{font-size:clamp(28px,4.6vw,44px);line-height:1.3;margin:0;font-weight:900;text-wrap:balance}
+.concl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.concl div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 16px;font-size:15px;line-height:1.6}
+.concl b{display:block;color:var(--gold);font-size:13px;letter-spacing:.08em}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);border-bottom:1px solid var(--line)}
+nav.toc .in{display:flex;gap:6px;overflow-x:auto;padding-block:10px}
+nav.toc a{white-space:nowrap;font-size:13px;font-weight:700;color:var(--fg);text-decoration:none;padding:6px 12px;border-radius:99px;background:var(--bg)}
+main.in{padding-block:36px 80px;display:grid;gap:60px}
+section{display:grid;gap:16px;scroll-margin-top:64px}
+h2{font-size:clamp(22px,3vw,28px);margin:0;font-weight:900;display:flex;gap:12px;align-items:baseline}
+h2 .n{font-size:14px;color:var(--ok);font-weight:900}
+.lead{color:var(--muted);max-width:72ch;margin:0}
+.fig{background:#fff;border:1px solid var(--line);border-radius:14px;overflow-x:auto}
+.fig img{display:block;width:100%;min-width:860px;height:auto}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:12px}
+.fact{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:4px;align-content:start}
+.fact .k{font-size:12px;font-weight:700;color:var(--ok);letter-spacing:.06em}
+.fact b{font-size:17px;line-height:1.4}
+.fact span{font-size:14px;color:var(--muted);line-height:1.6}
+/* timeline */
+.tl{display:grid;gap:0;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.tl .row{display:grid;grid-template-columns:150px 1fr 220px;gap:16px;padding:14px 18px;border-bottom:1px solid var(--line);align-items:start}
+.tl .row:last-child{border-bottom:0}
+.tl .when{font-weight:900;font-variant-numeric:tabular-nums}
+.tl .when small{display:block;font-weight:500;color:var(--muted);font-size:12px}
+.tl .who{font-size:13px;display:flex;flex-wrap:wrap;gap:6px;align-content:start}
+.chip{font-size:12px;font-weight:700;padding:2px 10px;border-radius:99px;background:var(--soft);color:var(--ok);white-space:nowrap}
+.chip.s2{background:#fff7e0;color:#7a5a00}.chip.s3{background:var(--warnbg);color:var(--warn)}.chip.s4{background:#eef1ef;color:var(--muted)}
+.tl .what b{display:block}
+.tl .what span{font-size:14px;color:var(--muted)}
+.tl .jump{font-size:13px;font-weight:700;color:var(--ok);text-decoration:none}
+@media (max-width:720px){.tl .row{grid-template-columns:1fr}}
+/* copy */
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tabs button{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);background:var(--paper);color:var(--fg);border-radius:99px;padding:8px 14px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.tabs button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.panel-head{display:grid;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.panel-head .meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;display:grid;gap:10px;grid-template-rows:auto 1fr auto;min-width:0}
+.card .h{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.card .h b{font-size:15px}
+.card .h span{font-size:12px;color:var(--muted)}
+.bubble{background:#eaf7ee;border-radius:4px 16px 16px 16px;padding:12px 14px;font-size:14.5px;line-height:1.75;white-space:pre-wrap;word-break:break-word;color:#1f2a24}
+.card button{font:inherit;font-size:13px;font-weight:700;border:0;background:var(--line-green);color:#fff;border-radius:8px;padding:8px 12px;cursor:pointer;justify-self:start}
+.card button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.note{background:var(--warnbg);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:0;font-size:14px}
+.ph{background:#fff1c7;border-radius:4px;padding:0 3px;font-weight:700}
+</style>
+</head>
+<body>
+
+
+<header class="top"><div class="in">
+  <span class="eyebrow">THE LOCAL ｜ 集客LINE（Xから登録した人向け）</span>
+  <h1>決済までの配信設計と文章案</h1>
+  <div class="concl">
+    <div><b>シナリオ</b>LINEに登録した人を「申し込んだ？参加した？決済した？」の3つの問いで4つに分ける。全員がどこか1つに入る。</div>
+    <div><b>理想の流れ</b>登録 → セミナー → 終了直後に案内 → 3日後に締切。止まった人には、止まった理由に合わせた1通を送る。</div>
+    <div><b>文章案</b>7つの場面 × 各5案。石川さんのXの書き方（「俺」・短い行・具体的な数字）に合わせた。</div>
+  </div>
+</div></header>
+
+<nav class="toc" aria-label="目次"><div class="in">
+  <a href="#now">1 いまの導線</a><a href="#scenario">2 シナリオ</a><a href="#ideal">3 理想の流れ</a><a href="#copy">4 文章案</a>
+</div></nav>
+
+<main class="in">
+
+<section id="now">
+  <h2><span class="n">01</span>いまの導線（調べて分かったこと）</h2>
+  <p class="lead">石川さんのXの投稿106件（9/7〜10/19）、Circleのイベント告知とリマインド、THE LOCAL SESSION 01のアーカイブを読みました。</p>
+  <div class="facts">
+    <div class="fact"><span class="k">入口</span><b>Xの投稿からLINE登録</b><span>「LINE追加してセミナーを絶対に聞いてほしい」と投稿にリンク。リンク先は友だち追加ページ。</span></div>
+    <div class="fact"><span class="k">セミナーで渡すもの</span><b>ビジネスモデル10個</b><span>「月100万の粗利を地方で稼ぐなら、このビジネスをやる」という10個を参加者にプレゼント。</span></div>
+    <div class="fact"><span class="k">伸びている投稿の型</span><b>具体的な数字と、意外な行動</b><span>「タワマン→限界集落で廃墟ビルを5万円で買った」13.9万表示、「1日4時間も働いてなかった」8.9万表示。</span></div>
+    <div class="fact"><span class="k">セミナーの中身</span><b>「次の10年は地方に張る」</b><span>需要があるのに供給がない場所。稼働率7%→70%のホテル、家賃0円で行列のラーメン屋。</span></div>
+    <div class="fact"><span class="k">いまのリマインド</span><b>告知文の再投稿が中心</b><span>Circle内は「本日20時〜」の短文と長い告知の再掲。「なぜ今日来るべきか」の一言がない。</span></div>
+    <div class="fact"><span class="k">分からなかったこと</span><b>決済前のLINEの中身</b><span>友だち追加しないと見られないため未確認。価格・締切・決済ページは文章案では空欄にした。</span></div>
+  </div>
+</section>
+
+<section id="scenario">
+  <h2><span class="n">02</span>シナリオ</h2>
+  <div class="fig"><img src="tree_scenarios.jpg" alt="LINE登録から決済までのシナリオ分岐"></div>
+  <div class="fig"><img src="tree_fix.jpg" alt="シナリオごとの止まる理由と打ち手"></div>
+</section>
+
+<section id="ideal">
+  <h2><span class="n">03</span>理想の流れ</h2>
+  <p class="lead">登録した日をD、セミナー当日をSとした配信スケジュールです。右の「文章案」から、その場面の5案に飛べます。</p>
+  <div class="tl" id="timeline"></div>
+  <p class="note">締切は本当に締めてください。延長したり毎回「最終」と書いたりすると、景品表示法の有利誤認にあたるおそれがあり、次から信じてもらえなくなります。</p>
+</section>
+
+<section id="copy">
+  <h2><span class="n">04</span>文章案（7場面 × 各5案）</h2>
+  <p class="lead"><span class="ph">【 】</span>の部分は、日時やURLに差し替えてください。どの案も、1通目の吹き出しにそのまま貼れる長さにしています。「質問の時間を取る」「録画を見た人にも特典を渡す」などは提案なので、運営の方針と違えば消してください。</p>
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="panel-head" id="phead"></div>
+  <div class="cards" id="cards"></div>
+</section>
+
+</main>
+
+<script>
+const SCENES = [
+ {id:"welcome", name:"登録直後", when:"D 登録した瞬間", to:"全員", aim:"「この人の話を聞きたい」と思わせ、セミナーの申込まで進めてもらう",
+  drafts:[
+   ["数字で入る","登録ありがとう。石川です。\n\n俺は会社を3回潰した。\nそのあと作った会社は、3年で約10億円で売却した。\n\n違いは能力じゃなくて「どこで戦ったか」だった。\n\n次の10年、俺は地方に張る。\nその理由と、地方で月100万の粗利を狙うならこれをやる、というビジネスモデル10個をセミナーで全部話します。\n\n▼参加する日を選ぶ\n【申込URL】"],
+   ["問いかけで入る","登録ありがとう。石川です。\n\n泊まりたいのに、宿がない。\n食べたいのに、店がない。\n\n地方には、需要があるのに供給がない場所がまだたくさんある。\n東京で競合と殴り合うより、ずっと勝ちやすい。\n\nどこで、何をやればいいのか。\nセミナーで具体的に話します。\n\n▼参加する日を選ぶ\n【申込URL】"],
+   ["ストーリーで入る","登録ありがとう。石川です。\n\n1年前まで、屋上でBBQができるタワマンに住んでた。\n今は限界集落で起業してる。\nオフィスは、売却資金で買った廃墟ビル（5万円）。\n\nなんでそんなことをしてるのか。\n答えは「地方が一番勝ちやすい市場だから」。\n\nその中身をセミナーで話すので、聞きに来てほしい。\n\n▼参加する日を選ぶ\n【申込URL】"],
+   ["特典を先に出す","登録ありがとう。石川です。\n\n先に特典の話をすると、\nセミナーに参加してくれた人には\n「地方で月100万の粗利を稼ぐなら、俺はこれをやる」\nというビジネスモデルを10個渡します。\n\n業種、立地、初期費用、お客さんがどこから来るか。\n成功の構造ごと持って帰ってください。\n\n▼参加する日を選ぶ\n【申込URL】"],
+   ["短く","登録ありがとう、石川です。\n\nCPAを500円下げるより、市場を変えた方が100倍効く。\n次の10年、俺が張る市場は「地方」です。\n\nその理由をセミナーで話します。\n▼日程はこちら\n【申込URL】"]
+  ]},
+ {id:"eve", name:"前日リマインド", when:"S−1日 20:00", to:"S1〜S3（申込者）", aim:"「明日は絶対に行こう」に変える。予定を思い出してもらうだけで終わらせない",
+  drafts:[
+   ["話す内容を予告","明日【日時】、セミナーです。\n\n明日話すのはこの3つ。\n・地方の中でも、特に需要が大きい事業カテゴリ\n・勝ちやすいエリアの見つけ方\n・月100万の粗利を狙うビジネスモデル10個\n\n参加リンクはこちら。\n【参加URL】"],
+   ["事例を1つ見せる","明日【日時】、セミナーです。\n\n1つだけ先に話すと、\n稼働率7%だったホテルが、月5万円くらいのSNS運用で70%になった。\n特別に高度なことはしていない。\n\n地方では、その「基本」すらやっている人がいない。\nこういう場所の見つけ方を明日話します。\n\n【参加URL】"],
+   ["宿題を出す","明日【日時】のセミナーの前に、1つだけお願い。\n\n自分の地元か、気になっている地域を1つ思い浮かべておいてください。\n\n「この地域なら何が足りていないか」\nを考えながら聞くと、持ち帰れるものが全然違うので。\n\n【参加URL】"],
+   ["人として話す","明日、画面越しに会えるのを楽しみにしてます。\n\n東京で10年以上やってきたことを、今は地方で使ってる。\n「宿ができて助かった」って直接言われる仕事は、正直めちゃくちゃ面白い。\n\nそんな話も含めて、明日【日時】に。\n【参加URL】"],
+   ["用件だけ","【リマインド】\n明日【日時】セミナーです。\n\n▼参加リンク\n【参加URL】\n\nカレンダーに入れておくと忘れません。\n画面オフ・耳だけの参加もOKです。"]
+  ]},
+ {id:"today", name:"当日リマインド", when:"S 19:00 と 19:55", to:"S1〜S3（申込者）", aim:"開始時刻に画面の前にいてもらう。19時は理由、19時55分はリンクだけ",
+  drafts:[
+   ["今日の一番の話","今日20時からセミナーです。\n\n今日一番伝えたいのは\n「地方なら何でも儲かる」わけじゃない、ということ。\n\n勝てるのは、需要があるのに供給が足りていない場所だけ。\nその見つけ方を話します。\n\n【参加URL】"],
+   ["ライブ限定のこと","今日20時からセミナーです。\n\n最後に質問の時間を取ります。\n「自分の地域だと何ができる？」も、その場で答えます。\nこれはライブに来た人だけ。\n\n【参加URL】"],
+   ["5分前・短く","あと5分で始めます。\nこちらから入ってください。\n【参加URL】"],
+   ["始まった直後","始まりました。\n今からでも間に合います。\n【参加URL】"],
+   ["耳だけOK","今日20時からです。\n家事をしながら、移動しながらの耳だけ参加もOK。\nビジネスモデル10個は、参加した人全員に渡します。\n\n【参加URL】"]
+  ]},
+ {id:"absent", name:"欠席した人へ", when:"S+1日 12:00", to:"S3（申込・欠席）", aim:"アーカイブを「見た人」にする。全部見せるより、見る場所を指定する",
+  drafts:[
+   ["要点3行","昨日来られなかった人へ。\n録画を置いておきます。\n\n要点は3つ。\n・地方は「需要があるのに供給がない」場所が勝ちやすい\n・奇をてらった事業はいらない。足りないものを置く\n・成功事例を大量に知っている人が勝つ\n\n▼録画（【公開期限】まで）\n【アーカイブURL】"],
+   ["見どころ指定","昨日は来られなかったかな。\n\n時間がなければ【◯分】からだけでも見てほしい。\n家賃0円で始めて行列ができたラーメン屋の話をしてます。\n\n【アーカイブURL】\n※【公開期限】で見られなくなります"],
+   ["特典の案内","昨日のセミナーの録画です。\n\n最後まで見てくれた人にも、ビジネスモデル10個を渡します。\n見終わったら、このトークに「見た」と一言送ってください。\n\n【アーカイブURL】"],
+   ["次回へつなぐ","昨日はタイミングが合わなかったかもしれないので、録画を送ります。\n【アーカイブURL】\n\nライブで質問したい人は、次回【次回日時】もあります。\n【申込URL】"],
+   ["短く","昨日の録画です。\n【公開期限】まで見られます。\n【アーカイブURL】"]
+  ]},
+ {id:"after", name:"参加後・未決済", when:"S+1日 20:00", to:"S2（参加・検討中）", aim:"「自分にもできるか」の不安を1つ消す。売り込みより、迷っている理由に答える",
+  drafts:[
+   ["迷いに答える","昨日はありがとうございました。\n\n「自分にもできるかな」と迷っているなら。\n\n地方で勝つのに必要なのは3つだけ。\n・方法を広く浅く知っていること\n・成功事例をたくさん知っていること\n・相談できる人がいること\n\n全部を1人でそろえなくていい。\nTHE LOCALはその3つが集まる場所です。\n\n▼THE LOCALに合流する\n【決済URL】（【締切】まで）"],
+   ["近い事例","昨日はありがとうございました。\n\nセミナーで話したホテルの件、\nSNS運用をした人は特別なスキルがあったわけじゃない。\nそこで実績ができて、次の仕事につながっていった。\n\n最初の1つで、環境ごと変わる。\nTHE LOCALはその1つ目を一緒につくる場所です。\n\n【決済URL】"],
+   ["個別相談の価値","昨日はありがとうございました。\n\n俺はこれまで、地方で事業をやる人の相談に個別で乗ってきた。\n本来なら数回で100万円前後をもらっていた内容です。\n\nそれを一人ずつやっても地方のプレイヤーは増えない。\nだからTHE LOCALにまとめました。\n\n【価格】／【決済URL】"],
+   ["卒業前提","昨日はありがとうございました。\n\nTHE LOCALは、長く居続けてほしいコミュニティじゃない。\n目標は1年以内に卒業してもらうこと。\n\n事例を知る、相談する、事業を始める、結果を出す。\nそこまでを最短で。\n\n【決済URL】（【締切】まで）"],
+   ["質問を受ける","昨日はありがとうございました。\n\n迷っていることがあれば、このトークにそのまま送ってください。\n「自分の地域だと何ができる？」でもOK。\n\n合流はこちらから。\n【決済URL】"]
+  ]},
+ {id:"last", name:"締切当日", when:"締切日 12:00 と 21:00", to:"S2・S3（未決済）", aim:"締切を1回だけはっきり伝える。煽らずに、事実と理由を書く",
+  drafts:[
+   ["事実だけ","今日【締切時刻】で、セミナー参加者向けの案内を締め切ります。\n\n・ビジネスモデル10個\n・【参加者特典】\n\n合流はこちらから。\n【決済URL】"],
+   ["締める理由","今日【締切時刻】で締め切ります。\n\n締切を延ばさないのは、入ってくれたメンバーと同じスタートを切ってほしいから。\n迷っているなら、今日決めてください。\n\n【決済URL】"],
+   ["市場の話で締める","ビジネスはタイミングがすべて。\n地方の市場は、今まさに追い風が吹き始めたところです。\n\n今日【締切時刻】まで。\n【決済URL】"],
+   ["夜の最終","あと【残り時間】で締め切ります。\nこれが最後の案内です。\n【決済URL】"],
+   ["見送る人へ","今回は見送る人も、気にせずこのLINEはそのままにしておいてください。\n次のセミナーや事例はここで送ります。\n\n合流する人は今日【締切時刻】まで。\n【決済URL】"]
+  ]},
+ {id:"invite", name:"未申込の人へ", when:"D+1日・D+3日・D+5日", to:"S4（未申込）", aim:"毎回ちがう切り口で、セミナーを自分ごとにしてもらう",
+  drafts:[
+   ["問いかけ","あなたの地元に、\n「あったら絶対に行くのに」っていう店、ありませんか？\n\nそれが地方ビジネスの入口です。\n見つけ方をセミナーで話します。\n\n【申込URL】"],
+   ["常識をひっくり返す","競合に勝つために必死に会議してるなら、\nそもそも市場を変えた方がいい。\n\n東京で何千店と戦うラーメン屋と、\n町に1軒もないラーメン屋。\n勝ちやすいのはどっちか。\n\n【申込URL】"],
+   ["数字","物件取得費0円。家賃0円。\n厨房機器はフリマで揃えた。\nそれでも行列ができているラーメン屋が、俺の住む地域にある。\n\nなぜ成り立つのか、セミナーで話します。\n【申込URL】"],
+   ["録画もある","日程が合わない人へ。\n次回は【次回日時】です。\n\nライブが難しければ、申し込んでおけば録画も送ります。\n【申込URL】"],
+   ["短く","次の10年は、地方に張る。\nその理由を1時間で話します。\n【次回日時】\n【申込URL】"]
+  ]}
+];
+
+const TL = [
+ ["D","登録した瞬間","welcome",["全員"],"登録直後のあいさつ","自己紹介と特典の予告。申込ボタンを1つだけ置く"],
+ ["D+1 / +3 / +5","20:00","invite",["S4"],"未申込の人に再招待","毎回ちがう切り口で。3回送っても申し込まない人は次回の日程案内へ"],
+ ["S−1","20:00","eve",["S1","S2","S3"],"前日リマインド","話す内容か事例を1つ見せて「行く理由」をつくる"],
+ ["S","19:00 と 19:55","today",["S1","S2","S3"],"当日リマインド","19時は理由、19時55分はリンクだけ"],
+ ["S","21:00 終了直後","after",["S1","S2"],"参加のお礼と合流の案内","特典の受け取り方と決済ページ。締切を1回だけ書く"],
+ ["S+1","12:00","absent",["S3"],"欠席した人へ録画","要点3行と見どころの時間。公開期限を書く"],
+ ["S+1","20:00","after",["S2"],"参加後・未決済の人へ","いちばん多い迷いに1つ答える"],
+ ["締切日","12:00 と 21:00","last",["S2","S3"],"締切の案内","事実と締める理由だけ。延長しない"],
+ ["決済後","すぐ","",["S1"],"会員LINEへ","入会直後用リッチメニュー（STEP1〜3）に切り替える"]
+];
+const chipClass = s => s==="S2"?"chip s2":s==="S3"?"chip s3":s==="S4"?"chip s4":"chip";
+document.getElementById("timeline").innerHTML = TL.map(([d,t,id,who,what,why])=>`
+ <div class="row"><div class="when">${d}<small>${t}</small></div>
+ <div class="what"><b>${what}</b><span>${why}</span></div>
+ <div class="who">${who.map(s=>`<span class="${chipClass(s)}">${s}</span>`).join("")}${id?`<a class="jump" href="#copy" data-go="${id}">文章案 →</a>`:""}</div></div>`).join("");
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+const mark = s => esc(s).replace(/【[^】]*】/g, m=>`<span class="ph">${m}</span>`);
+function show(id){
+  let cur = id; try{ if(!cur) cur = localStorage.getItem("tl-tab") || SCENES[0].id }catch(e){ cur = cur||SCENES[0].id }
+  const sc = SCENES.find(s=>s.id===cur) || SCENES[0];
+  try{ localStorage.setItem("tl-tab", sc.id) }catch(e){}
+  document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.id===sc.id));
+  document.getElementById("phead").innerHTML = `<b>${sc.name}</b><div class="meta"><span class="chip">${sc.when}</span><span class="chip s4">送る相手：${sc.to}</span></div><span>ねらい：${sc.aim}</span>`;
+  document.getElementById("cards").innerHTML = sc.drafts.map(([label,text],i)=>`
+   <div class="card"><div class="h"><b>案${i+1}　${label}</b><span>${text.length}字</span></div>
+   <div class="bubble" id="b-${sc.id}-${i}">${mark(text)}</div>
+   <button type="button" data-copy="${i}">コピー</button></div>`).join("");
+  document.querySelectorAll("#cards button").forEach(btn=>btn.addEventListener("click",()=>{
+    const text = sc.drafts[+btn.dataset.copy][1];
+    const done = ()=>{ btn.textContent="コピーしました"; setTimeout(()=>btn.textContent="コピー",1600) };
+    navigator.clipboard?.writeText(text).then(done).catch(()=>{
+      const r=document.createRange(); r.selectNodeContents(document.getElementById(`b-${sc.id}-${btn.dataset.copy}`));
+      const s=getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent="選択しました。⌘Cでコピー";
+    });
+  }));
+}
+document.getElementById("tabs").innerHTML = SCENES.map(s=>`<button type="button" role="tab" data-id="${s.id}">${s.name}</button>`).join("");
+document.querySelectorAll("#tabs button").forEach(b=>b.addEventListener("click",()=>show(b.dataset.id)));
+document.querySelectorAll("[data-go]").forEach(a=>a.addEventListener("click",()=>show(a.dataset.go)));
+show();
+</script>
+
+</body>
+</html>
